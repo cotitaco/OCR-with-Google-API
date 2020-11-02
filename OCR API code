@@ -1,0 +1,31 @@
+pip install google-cloud-vision
+import os, io
+from google.cloud import vision
+import pandas as pd
+import numpy as np
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'C:\Users\Lenovo\Documents\PythonOCR\VisionAPIDemo\proyecto-ocr-293616-0d25e7e27bff.json'
+client = vision.ImageAnnotatorClient()
+
+FILE_NAME = 'texto.jpg'
+FOLDER_PATH = r'C:\Users\Lenovo'
+
+with io.open(os.path.join(FOLDER_PATH, FILE_NAME),'rb') as image_file:
+    content = image_file.read()
+    
+image = vision.Image(content=content)
+
+response= client.text_detection(image=image)
+
+df = pd.DataFrame(columns=['locale','description'])
+texts = response.text_annotations
+
+for text in texts:
+    df = df.append(
+    dict(locale=text.locale,
+        description = text.description),
+        ignore_index=True
+    )
+    
+df
+
